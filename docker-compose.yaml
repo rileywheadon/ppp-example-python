@@ -1,0 +1,7 @@
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+    image: ppp-test-service:latest
+    ports:
+      - "5000:5000"
