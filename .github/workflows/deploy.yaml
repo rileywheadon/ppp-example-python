@@ -48,6 +48,7 @@ jobs:
           sudo tailscale down
 
       - name: Delete Tailscale Machine
+        if: always()
         env:
           TS_API_KEY: ${{ secrets.TAILSCALE_API_KEY }}
         run: |
