@@ -5,61 +5,9 @@ on:
     branches:
       - master
 
-env:
-  SERVICE_NAME: ppp-example-python
-
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+  call-deploy:
+    uses: rwheadon-project-platform/ppp-workflows/.github/workflows/deploy.yaml@main
+    with:
+      service_name: ppp-example-python
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.SERVICE_NAME }}:latest .
-
-      - name: Login to DockerHub
-        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-
-      - name: Push to DockerHub
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.SERVICE_NAME }}:latest
-
-      - name: Install Tailscale
-        run: |
-          curl -fsSL https://tailscale.com/install.sh | sh
-
-      - name: Start Tailscale and join Tailnet
-        run: |
-          sudo tailscale up --authkey ${{ secrets.TAILSCALE_AUTH_KEY }}
-
-      - name: Deploy to server via SSH over Tailscale
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.TAILSCALE_HOST }}
-          username: deploy
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            cd /home/deploy/${{ env.SERVICE_NAME }}
-            docker-compose pull
-            docker-compose down
-            docker-compose up -d
-
-      - name: Shutdown Tailscale
-        run: |
-          sudo tailscale down
-
-      - name: Delete Tailscale Machine
-        if: always()
-        env:
-          TS_API_KEY: ${{ secrets.TAILSCALE_API_KEY }}
-        run: |
-          # Get machine ID of the runner
-          MACHINE_ID=$(tailscale status --json | jq -r '.Self.ID')
-          echo "Machine ID: $MACHINE_ID"
-
-          # Delete the machine via API
-          curl -s -X DELETE \
-            -H "Authorization: Bearer $TS_API_KEY" \
-            "https://api.tailscale.com/api/v2/device/$MACHINE_ID"
