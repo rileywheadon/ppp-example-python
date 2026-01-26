@@ -1,0 +1,61 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/ppp-example-python:latest .
+
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Push to DockerHub
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/ppp-example-python:latest
+
+      - name: Install Tailscale
+        run: |
+          curl -fsSL https://tailscale.com/install.sh | sh
+
+      - name: Start Tailscale and join Tailnet
+        run: |
+          sudo tailscale up --authkey ${{ secrets.TAILSCALE_AUTHKEY }}
+
+      - name: Deploy to server via SSH over Tailscale
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: deploy
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /home/deploy/ppp-example-python
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d
+
+      - name: Shutdown Tailscale
+        run: |
+          sudo tailscale down
+
+      - name: Delete Tailscale Machine
+        env:
+          TS_API_KEY: ${{ secrets.TAILSCALE_APIKEY }}
+        run: |
+          # Get machine ID of the runner
+          MACHINE_ID=$(tailscale status --json | jq -r '.Self.ID')
+          echo "Machine ID: $MACHINE_ID"
+
+          # Delete the machine via API
+          curl -s -X DELETE \
+            -H "Authorization: Bearer $TS_API_KEY" \
+            "https://api.tailscale.com/api/v2/device/$MACHINE_ID"

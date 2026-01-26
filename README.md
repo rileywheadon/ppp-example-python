@@ -1,4 +1,4 @@
-# PPP Test Service
+# PPP Example Python
 
 This is a test service for my personal project platform (PPP).
 It is a minimal Flask app built with Docker.
