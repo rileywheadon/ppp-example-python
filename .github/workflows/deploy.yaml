@@ -28,15 +28,15 @@ jobs:
 
       - name: Start Tailscale and join Tailnet
         run: |
-          sudo tailscale up --authkey ${{ secrets.TAILSCALE_AUTHKEY }}
+          sudo tailscale up --authkey ${{ secrets.TAILSCALE_AUTH_KEY }}
 
       - name: Deploy to server via SSH over Tailscale
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ secrets.SERVER_HOST }}
+          host: ${{ secrets.TAILSCALE_HOST }}
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
+          port: ${{ secrets.SSH_PORT }}
           script: |
             cd /home/deploy/ppp-example-python
             docker-compose pull
@@ -49,7 +49,7 @@ jobs:
 
       - name: Delete Tailscale Machine
         env:
-          TS_API_KEY: ${{ secrets.TAILSCALE_APIKEY }}
+          TS_API_KEY: ${{ secrets.TAILSCALE_API_KEY }}
         run: |
           # Get machine ID of the runner
           MACHINE_ID=$(tailscale status --json | jq -r '.Self.ID')
