@@ -12,11 +12,7 @@ In development mode, we override some of the directives in the Dockerfile:
 - Flask is run in debug mode using the development web server.
 
 ```bash
-# Start the application in development mode
-docker compose -f docker-compose.dev.yaml up --build
-
-# Stop and remove the development container
-docker compose -f docker-compose.dev.yaml down
+./scripts/dev.sh
 ```
 
 ## Run in Production Mode
@@ -24,12 +20,6 @@ docker compose -f docker-compose.dev.yaml down
 In production mode, Flask is run with Gunicorn as described in the Dockerfile.
 
 ```bash
-# Start the application in production mode
-docker compose -f docker-compose.yaml up --build
-
-# View logs
-docker compose -f docker-compose.yaml logs -f
-
-# Stop and remove the production container
-docker compose -f docker-compose.yaml down
+./scripts/build.sh
+./scripts/deploy.sh
 ```

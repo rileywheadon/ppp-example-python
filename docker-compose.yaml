@@ -1,7 +1,23 @@
 services:
   app:
-    build:
-      dockerfile: Dockerfile
-    image: ppp-test-service:latest
+    image: ${DOCKERHUB_USERNAME}/ppp-example-python:${TAG}
     ports:
       - "5000:5000"
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=ppp_example_python
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
