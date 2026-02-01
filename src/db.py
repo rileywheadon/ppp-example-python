@@ -3,7 +3,9 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, 
 from sqlalchemy.sql import func
 
 # Database configuration
-DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/ppp_example_python')
+DATABASE_URL = os.getenv('DATABASE_URL')
+if not DATABASE_URL:
+    raise EnvironmentError("DATABASE_URL environment variable not set.")
 
 # Create engine (only if DATABASE_URL is provided)
 engine = None

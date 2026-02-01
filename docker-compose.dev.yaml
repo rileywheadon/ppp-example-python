@@ -5,6 +5,7 @@ services:
     environment:
       - FLASK_ENV=development
       - FLASK_DEBUG=1
+      - DATABASE_URL=postgresql://postgres:postgres@dev-db:5432/ppp_example_python_dev
     ports:
       - "5000:5000"
     volumes:
