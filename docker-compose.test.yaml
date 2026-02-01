@@ -1,0 +1,25 @@
+services:
+  test-app:
+    build:
+      dockerfile: Dockerfile
+    environment:
+      - FLASK_ENV=testing
+      - FLASK_DEBUG=0
+      - DATABASE_URL=postgresql://postgres:postgres@test-db:5432/ppp_example_python_test
+    volumes:
+      - ./src:/app/src
+    depends_on:
+      - test-db
+    command: ["python", "-m", "pytest", "-v", "src/tests/"]
+
+  test-db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=ppp_example_python_test
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    tmpfs:
+      - /var/lib/postgresql/data
+
+volumes:
+  test_postgres_data:

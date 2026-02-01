@@ -6,7 +6,11 @@
   <title>PPP Example Python</title>
   
   <!-- TailwindCSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  {% if environment == 'development' %}
+    <script src="https://cdn.tailwindcss.com"></script>
+  {% else %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+  {% endif %}
   
   <!-- HTMX -->
   <script src="https://unpkg.com/htmx.org@1.9.10"></script>

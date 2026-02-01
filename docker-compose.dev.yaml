@@ -1,5 +1,5 @@
 services:
-  app:
+  dev-app:
     build:
       dockerfile: Dockerfile
     environment:
@@ -8,15 +8,15 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./src:/app
+      - ./src:/app/src
     command: flask run --host=0.0.0.0 --port=5000
     depends_on:
-      - db
+      - dev-db
 
-  db:
+  dev-db:
     image: postgres:15
     environment:
-      - POSTGRES_DB=ppp_example_python
+      - POSTGRES_DB=ppp_example_python_dev
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:

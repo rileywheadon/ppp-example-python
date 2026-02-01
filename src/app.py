@@ -1,25 +1,7 @@
-from flask import Flask, render_template, jsonify
-import time
-from datetime import datetime
+from src import create_app
 
-app = Flask(__name__)
+# Create the Flask application using the factory pattern
+app = create_app()
 
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-
-@app.route('/api/htmx')
-def api_hello():
-    current_time = datetime.now().strftime('%H:%M:%S')
-    return render_template('htmx.html', current_time=current_time)
-
-
-@app.route('/health')
-def health_check():
-    return jsonify({
-        'status': 'healthy',
-        'timestamp': datetime.now().isoformat(),
-        'service': 'ppp-example-python',
-    })
+if __name__ == '__main__':
+    app.run()

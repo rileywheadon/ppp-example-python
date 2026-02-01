@@ -7,3 +7,8 @@ venv/
 build/
 dist/
 .git
+node_modules/
+.pytest_cache
+.coverage
+README.md
+*.md

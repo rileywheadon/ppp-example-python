@@ -6,16 +6,27 @@ on:
       - main
 
 jobs:
-  call-deploy:
-    uses: rwheadon-project-platform/ppp-workflows/.github/workflows/deploy.yaml@main
-    with:
-      service_name: ppp-example-python
-    secrets:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-      SSH_PORT: ${{ secrets.SSH_PORT }}
-      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      TAILSCALE_API_KEY: ${{ secrets.TAILSCALE_API_KEY }}
-      TAILSCALE_AUTH_KEY: ${{ secrets.TAILSCALE_AUTH_KEY }}
-      TAILSCALE_HOST: ${{ secrets.TAILSCALE_HOST }}
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Build and Push Docker image
+        run: ./scripts/build.sh 
+
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          username: deploy
+          host: ${{ secrets.SSH_HOST }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd /home/deploy/ppp-example-python/
+            git pull origin main
+            ./scripts/deploy.sh
