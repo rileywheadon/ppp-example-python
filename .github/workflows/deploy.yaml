@@ -17,7 +17,7 @@ jobs:
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Build and Push Docker image
-        run: ./scripts/build.sh 
+        run: ./scripts/build.sh ${{ secrets.DOCKERHUB_USERNAME }}
 
       - name: Deploy to server via SSH
         uses: appleboy/ssh-action@v0.1.10

@@ -1,11 +1,16 @@
 #!/bin/bash
 set -e -o pipefail
 
-export DOCKERHUB_USERNAME="rileywheadon"
-export TAG=$(yq e '.version' version.yaml)
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 DOCKERHUB_USERNAME"
+    exit 1
+fi
+
+DOCKERHUB_USERNAME=$1
+TAG=$(yq e '.version' version.yaml)
 
 # Enable BuildKit for faster builds
-export DOCKER_BUILDKIT=1
+DOCKER_BUILDKIT=1
 
 # Build versioned and latest images with BuildKit cache
 docker build \
