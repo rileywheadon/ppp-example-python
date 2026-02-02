@@ -9,11 +9,16 @@ Using Docker Compose, the application can be run in development/production mode 
 All scripts are in `scripts/`. 
 Ensure they are executable (`chmod +x scripts/*.sh`) before use.
 
-### `scripts/build.sh $DOCKERHUB_USERNAME`
+### `scripts/config.sh`
+
+Contains non-secret environment variables for the application.
+You should not need to run this script manually.
+
+### `scripts/build.sh`
 
 Builds Docker images (tagged by `version.yaml` and `latest`) and pushes them to Docker Hub.
 
-### `scripts/deploy.sh`
+### `scripts/deploy.sh [domain]`
 
 Deploys the service on the host by bringing up the database, running migrations, then starting the application containers via Docker Compose.
 Requires a Docker image in Docker Hub with the version defined in `version.yaml`.
@@ -22,7 +27,7 @@ Requires a Docker image in Docker Hub with the version defined in `version.yaml`
 
 Starts the development compose stack (`docker-compose.dev.yaml`), runs migrations, and starts the app in dev mode.
 
-### `scripts/migrate.sh $COMMAND`
+### `scripts/migrate.sh <command> [message]`
 
 Run Alembic commands inside the application container (`init|generate|upgrade|downgrade|current|history`).
 For example, `./scripts/migrate.sh upgrade` (upgrade), `./scripts/migrate.sh generate "add users table"` (generate an empty migration).
