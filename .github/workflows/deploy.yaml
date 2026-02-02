@@ -28,5 +28,5 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd /home/deploy/ppp-example-python/
-            git pull origin main
+            git pull origin master
             ./scripts/deploy.sh
