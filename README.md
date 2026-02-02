@@ -43,7 +43,7 @@ User and SSH:
 Directory and Repository:
 
 - The repository is located at the path: `/home/deploy/ppp-example-python/` 
-- Ensure the repo is cloned there and owned by `deploy`: `chown -R deploy:deploy /home/deploy/ppp-example-python`
+- Ensure the repo is owned by `deploy`: `chown -R deploy:deploy /home/deploy/ppp-example-python`
 - Ensure scripts are executable: `chmod +x /home/deploy/ppp-example-python/scripts/*.sh`
 
 Software:
