@@ -1,0 +1,6 @@
+{$DOMAIN} {
+    {$TLS_CONFIG}
+    reverse_proxy app:5000
+}
+
+{$WWW_CONFIG}

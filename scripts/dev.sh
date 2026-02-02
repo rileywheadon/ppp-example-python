@@ -1,18 +1,12 @@
 #!/bin/bash
 set -e -o pipefail
-
-export COMPOSE_FILE="docker-compose.dev.yaml" 
-export SERVICE_NAME="dev-app"
-export DATABASE_NAME="dev-db"
-
-# Enable BuildKit for faster builds
-export DOCKER_BUILDKIT=1
+source "scripts/config.sh"
 
 # Start the database and wait for it to be healthy
-docker compose -f $COMPOSE_FILE up -d --build $DATABASE_NAME --wait 
+docker compose -f $DEV_COMPOSE_FILE up -d $DEV_DATABASE_NAME --build --wait
 
 # Wait for database to be ready and run migrations
-./scripts/migrate.sh upgrade
+COMPOSE_FILE=$DEV_COMPOSE_FILE SERVICE_NAME=$DEV_SERVICE_NAME ./scripts/migrate.sh upgrade
 
 # Now start the application
-docker compose -f $COMPOSE_FILE up -d --build $SERVICE_NAME
+docker compose -f $DEV_COMPOSE_FILE up -d $DEV_SERVICE_NAME --build

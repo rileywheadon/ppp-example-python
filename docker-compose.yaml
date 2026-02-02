@@ -1,8 +1,23 @@
 services:
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - DOMAIN=${DOMAIN}
+      - TLS_CONFIG=${TLS_CONFIG}
+      - WWW_CONFIG=${WWW_CONFIG}
+    restart: unless-stopped
+
   app:
     image: ${DOCKERHUB_USERNAME}/ppp-example-python:${TAG}
-    ports:
-      - "5000:5000"
+    expose:
+      - "5000"
     depends_on:
       - db
     restart: unless-stopped
@@ -21,3 +36,5 @@ services:
 
 volumes:
   postgres_data:
+  caddy_data:
+  caddy_config:

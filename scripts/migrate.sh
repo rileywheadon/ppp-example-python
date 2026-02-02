@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e -o pipefail
 
-MIGRATIONS_DIR="./src/migrations/versions"
-
 if [ -z "$COMPOSE_FILE" ]; then
     echo "Error: COMPOSE_FILE environment variable is not set."
     exit 1
